@@ -205,22 +205,22 @@ local function GetNestPositions(flockC)
 		else                      dir, loc = L.Upper, flockC.."-"..L.ArrowUpper.." "..L.Middle10	--06,12,.. loc = U.Middle
 		end
 	elseif mod:IsDifficulty("normal10", "heroic10") then
-		if     flockC ==  1 then dir, loc = L.Lower, "1-"..L.ArrowLower.." "..L.NorthEast	--01
-		elseif flockC ==  2 then dir, loc = L.Lower, "2-"..L.ArrowLower.." "..L.SouthEast	--02
-		elseif flockC ==  3 then dir, loc = L.Lower, "3-"..L.ArrowLower.." "..L.SouthWest	--03
-		elseif flockC ==  4 then dir, loc = L.Upper, "4-"..L.ArrowUpper.." "..L.NorthEast	--04
-		elseif flockC ==  5 then dir, loc = L.Upper, "5-"..L.ArrowUpper.." "..L.SouthEast	--05
-		elseif flockC ==  6 then dir, loc = L.Upper, "6-"..L.ArrowUpper.." "..L.Middle10	--06
-		elseif flockC ==  7 then dir, loc = L.Lower, "7-"..L.ArrowLower.." "..L.NorthEast	--07
-		elseif flockC ==  8 then dir, loc = L.Lower, "8-"..L.ArrowLower.." "..L.SouthEast	--08
-		elseif flockC ==  9 then dir, loc = L.UpperAndLower, "9-"..L.ArrowLower.." "..L.SouthWest..", 10-"..L.ArrowUpper.." "..L.NorthEast --9-10
-		elseif flockC == 10 then dir, loc = L.Upper, "11-"..L.ArrowUpper.." "..L.SouthEast	--11
-		elseif flockC == 11 then dir, loc = L.Upper, "12-"..L.ArrowUpper.." "..L.Middle10	--12
-		elseif flockC == 12 then dir, loc = L.Lower, "13-"..L.ArrowLower.." "..L.NorthEast	--13
-		elseif flockC == 13 then dir, loc = L.Lower, "14-"..L.ArrowLower.." "..L.SouthEast	--14
-		elseif flockC == 14 then dir, loc = L.UpperAndLower, "15-"..L.ArrowLower.." "..L.SouthWest..", 16-"..L.ArrowUpper.." "..L.NorthEast	--15-16
-		elseif flockC == 15 then dir, loc = L.Upper, "17-"..L.ArrowUpper.." "..L.SouthEast	--17
-		elseif flockC == 16 then dir, loc = L.Upper, "18-"..L.ArrowUpper.." "..L.Middle10	--18
+		if     flockC ==  1 then dir, loc = L.Lower.."-"..L.NorthEast,									 "1-"..L.ArrowLower.." "..L.NorthEast	--01
+		elseif flockC ==  2 then dir, loc = L.Lower.."-"..L.SouthEast.." "..DBM_CORE_TANK_ICON,			 "2-"..L.ArrowLower.." "..L.SouthEast	--02
+		elseif flockC ==  3 then dir, loc = L.Lower.."-"..L.SouthWest,									 "3-"..L.ArrowLower.." "..L.SouthWest	--03
+		elseif flockC ==  4 then dir, loc = L.Upper.."-"..L.NorthEast.." "..DBM_CORE_TANK_ICON,			 "4-"..L.ArrowUpper.." "..L.NorthEast	--04
+		elseif flockC ==  5 then dir, loc = L.Upper.."-"..L.SouthEast,									 "5-"..L.ArrowUpper.." "..L.SouthEast	--05
+		elseif flockC ==  6 then dir, loc = L.Upper.."-"..L.Middle10,									 "6-"..L.ArrowUpper.." "..L.Middle10	--06
+		elseif flockC ==  7 then dir, loc = L.Lower.."-"..L.NorthEast,									 "7-"..L.ArrowLower.." "..L.NorthEast	--07
+		elseif flockC ==  8 then dir, loc = L.Lower.."-"..L.SouthEast.." "..DBM_CORE_TANK_ICON,			 "8-"..L.ArrowLower.." "..L.SouthEast	--08
+		elseif flockC ==  9 then dir, loc = L.Lower.."-"..L.SouthWest..", "..L.Upper.."-"..L.NorthEast,	 "9-"..L.ArrowLower.." "..L.SouthWest..", 10-"..L.ArrowUpper.." "..L.NorthEast --9-10
+		elseif flockC == 10 then dir, loc = L.Upper.."-"..L.SouthEast,									"11-"..L.ArrowUpper.." "..L.SouthEast	--11
+		elseif flockC == 11 then dir, loc = L.Upper.."-"..L.Middle10.." "..DBM_CORE_TANK_ICON,			"12-"..L.ArrowUpper.." "..L.Middle10	--12
+		elseif flockC == 12 then dir, loc = L.Lower.."-"..L.NorthEast,									"13-"..L.ArrowLower.." "..L.NorthEast	--13
+		elseif flockC == 13 then dir, loc = L.Lower.."-"..L.SouthEast.." "..DBM_CORE_TANK_ICON,			"14-"..L.ArrowLower.." "..L.SouthEast	--14
+		elseif flockC == 14 then dir, loc = L.Lower.."-"..L.SouthWest..", "..L.Upper.."-"..L.NorthEast,	"15-"..L.ArrowLower.." "..L.SouthWest..", 16-"..L.ArrowUpper.." "..L.NorthEast	--15-16
+		elseif flockC == 15 then dir, loc = L.Upper.."-"..L.SouthEast,									"17-"..L.ArrowUpper.." "..L.SouthEast	--17
+		elseif flockC == 16 then dir, loc = L.Upper.."-"..L.Middle10.." "..DBM_CORE_TANK_ICON,			"18-"..L.ArrowUpper.." "..L.Middle10	--18
 		end
 	elseif mod:IsDifficulty("normal25") then
 		if     flockC ==  1 then dir, loc = L.Lower, "1-"..L.ArrowLower.." "..L.NorthEast														--Lower NE
