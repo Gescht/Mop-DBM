@@ -151,7 +151,7 @@ function mod:UNIT_SPELLCAST_START(uId, _, _, _, spellId)
 		quillsCount = quillsCount + 1
 		warnQuills:Show(quillsCount)
 		specWarnQuills:Show()
-		timerQuills:Start()
+		--timerQuills:Start()
 		if self:IsDifficulty("normal10", "heroic10", "lfr25") then
 			timerQuillsCD:Start(81, quillsCount+1)--81 sec normal, sometimes 91s?
 		else
