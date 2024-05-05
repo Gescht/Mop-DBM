@@ -65,9 +65,9 @@ local timerBreathsCD			= mod:NewTimer(16, "timerBreathsCD", 137731, nil, false)-
 
 --TODO, maybe monitor length since last cast and if it's 28 instead of 25, make next timer also 28 for remainder of that head phase (then return to 25 after rampage unless we detect another 28)
 --TODO, Verify timers on normal. WoL bugs out and combines GUIDs making it hard to determine actual CDs in my logs.
---local timerCinderCD				= mod:NewCDTimer(25, 139822, nil, not mod:IsTank())--The cd is either 25 or 28 (either or apparently, no in between). it can even swap between the two in SAME pull
+local timerCinderCD				= mod:NewCDTimer(14, 139822, nil, not mod:IsTank())--The cd is either 25 or 28 (either or apparently, no in between). it can even swap between the two in SAME pull
 local timerTorrentofIce			= mod:NewBuffFadesTimer(11, 139866)
---local timerTorrentofIceCD		= mod:NewCDTimer(25, 139866, nil, not mod:IsTank())--Same as bove, either 25 or 28
+local timerTorrentofIceCD		= mod:NewCDTimer(20, 139866, nil, not mod:IsTank())--Same as bove, either 25 or 28
 --local timerNetherTearCD			= mod:NewCDTimer(25, 140138)--Heroic. Also either 25 or 28. On by default since these require more pre planning than fire and ice.
 
 local soundCinders				= mod:NewSound(139822)
@@ -185,21 +185,21 @@ function mod:OnCombatStart(delay)
 	table.wipe(activeHeadGUIDS)
 	rampageCount = 0
 	rampageCast = 0
-	fireInFront = 0
-	venomInFront = 0
-	iceInFront = 0
-	fireBehind = 1
-	venomBehind = 0
-	iceBehind = 0
+		fireInFront = 0
+		venomInFront = 0
+		iceInFront = 0
+			fireBehind = 1
+			venomBehind = 0
+			iceBehind = 0
 	cinderIcon = 7
 	iceIcon = 6
 	table.wipe(torrentExpires)
 	if self:IsHeroic() then
-		arcaneBehind = 1
+			arcaneBehind = 1
 		arcaneInFront = 0
 		arcaneRecent = false
---[[		timerCinderCD:Start(13)
-		timerNetherTearCD:Start()
+		timerCinderCD:Start(30.5)
+--[[		timerNetherTearCD:Start()
 	elseif self:IsDifficulty("normal10", "normal25") then
 		timerCinderCD:Start()
 	else
@@ -229,8 +229,14 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnNetherTear:Show()
 		specWarnNetherTear:Show()
 --		timerNetherTearCD:Start(args.sourceGUID)
-	elseif spellId == 139866 then
---		timerTorrentofIceCD:Start(args.sourceGUID)
+	elseif spellId == 139866 then --Torrent of Ice
+		if 3 == iceBehind then
+			timerTorrentofIceCD:Start(args.sourceGUID,9)
+		elseif 2 == iceBehind then
+			timerTorrentofIceCD:Start(args.sourceGUID,14)
+		elseif 1 == iceBehind then
+			timerTorrentofIceCD:Start(args.sourceGUID,28)
+		end
 		findTorrent()
 	end
 end
@@ -289,9 +295,15 @@ function mod:SPELL_AURA_APPLIED(args)
 			if not self.Options.timerBreaths then return end
 			timerBreathsCD:Start()
 		end
-	elseif spellId == 139822 then
+	elseif spellId == 139822 then --Cinders
 		warnCinders:Show(args.destName)
---		timerCinderCD:Start(args.sourceGUID)
+		if 3 == fireBehind then
+			timerCinderCD:Start(9)
+		elseif 2 == fireBehind then
+			timerCinderCD:Start()
+		elseif 1 == fireBehind then
+			timerCinderCD:Start(28)
+		end
 		if args:IsPlayer() then
 			specWarnCinders:Show()
 			yellCinders:Yell()
@@ -331,15 +343,35 @@ end
 mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
-	if msg:find("spell:139458") then
+	if msg:find("spell:139458") then --Rampage start
 		rampageCount = rampageCount + 1
 		warnRampage:Show(rampageCount)
 		specWarnRampage:Show(rampageCount)
 		timerArcticFreezeCD:Cancel()
 		timerRotArmorCD:Cancel()
+
 		timerBreathsCD:Cancel()
---		timerCinderCD:Cancel()
---		timerTorrentofIceCD:Cancel()
+		--breath after rampage
+		if self.Options.timerBreaths then
+			timerBreathsCD:Start(21+8.5)
+		end
+
+		timerCinderCD:Cancel()
+		--cinders of ice after rampage
+		if 1 == fireInFront and 0 ~= fireBehind then
+			timerCinderCD:Start(21+5.9)
+		else
+			timerCinderCD:Start(21+3.4)
+		end
+
+		timerTorrentofIceCD:Cancel()
+		--torrent of ice after rampage
+		if 1 == iceInFront then
+			timerTorrentofIceCD:Start(21+12)
+		else
+			timerTorrentofIceCD:Start(21+10)
+		end
+
 --		timerNetherTearCD:Cancel()
 		timerRampage:Start()
 		if not (self.Options.AnnounceCooldowns == "Every") then
@@ -349,13 +381,10 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 		if (self.Options.AnnounceCooldowns == "Never") or (arcaneInFront > 0 or arcaneRecent) and ((self.Options.AnnounceCooldowns == "EveryTwoExcludeDiff") or (self.Options.AnnounceCooldowns == "EveryThreeExcludeDiff")) then return end--You have a diffused player, don't call out cds
 		rampageCast = rampageCast + 1
 		DBM:PlayCountSound(rampageCast)
-	elseif msg == L.rampageEnds or msg:find(L.rampageEnds) then
+	elseif msg == L.rampageEnds or msg:find(L.rampageEnds) then --Rampage ends
 		arcaneRecent = false
 		warnRampageFaded:Show()
 		specWarnRampageFaded:Show()
-		if self.Options.timerBreaths then
-			timerBreathsCD:Start(10)
-		end
 		--timers below may need adjusting by 1-2 seconds as I had to substitute last rampage SPELL_DAMAGE event for rampage ends emote when i reg expressioned these timers on WoL
 --[[		if iceBehind > 0 then
 			if self:IsHeroic() then
