@@ -69,7 +69,7 @@ local timerBreathsCD			= mod:NewTimer(16, "timerBreathsCD", 137731, nil, false)-
 local timerCinderCD				= mod:NewCDTimer(14, 139822, nil, not mod:IsTank())--The cd is either 25 or 28 (either or apparently, no in between). it can even swap between the two in SAME pull
 local timerTorrentofIce			= mod:NewBuffFadesTimer(11, 139866)
 local timerTorrentofIceCD		= mod:NewCDTimer(20, 139866, nil, not mod:IsTank())--Same as bove, either 25 or 28
---local timerNetherTearCD			= mod:NewCDTimer(25, 140138)--Heroic. Also either 25 or 28. On by default since these require more pre planning than fire and ice.
+local timerNetherTearCD			= mod:NewCDTimer(25, 140138)--Heroic. Also either 25 or 28. On by default since these require more pre planning than fire and ice.
 
 local soundCinders				= mod:NewSound(139822)
 local soundTorrentofIce			= mod:NewSound(139889)
@@ -98,6 +98,7 @@ local iceTorrent = GetSpellInfo(139857)
 local torrentExpires = {}
 local arcaneRecent = false
 
+local lastNetherTear
 
 local function warnTorrent(name)
 	if not name then return end
@@ -184,6 +185,7 @@ local function clearHeadGUID(GUID)
 end
 
 function mod:OnCombatStart(delay)
+	lastNetherTear = GetTime()
 	table.wipe(activeHeadGUIDS)
 	rampageCount = 0
 	rampageCast = 0
@@ -228,9 +230,11 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
 	if spellId == 140138 then
+		print("SPELL_CAST_SUCCESS lastNetherTear ",GetTime()-lastNetherTear)
+		lastNetherTear = GetTime()
 		warnNetherTear:Show()
 		specWarnNetherTear:Show()
---		timerNetherTearCD:Start(args.sourceGUID)
+		timerNetherTearCD:Start()
 	elseif spellId == 139866 then --Torrent of Ice
 		if 3 == iceBehind then
 			timerTorrentofIceCD:Start(10)
@@ -377,7 +381,11 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 				timerTorrentofIceCD:Start(rampageDuration+10)--32,2
 			end
 		end
---		timerNetherTearCD:Cancel()
+
+		timerNetherTearCD:Cancel()
+		print("SPELL_CAST_SUCCESS lastNetherTear ",GetTime()-lastNetherTear)
+		lastNetherTear = GetTime()
+
 		timerRampage:Start()
 		if not (self.Options.AnnounceCooldowns == "Every") then
 			if ((self.Options.AnnounceCooldowns == "EveryTwoExcludeDiff") or (self.Options.AnnounceCooldowns == "EveryTwo")) and rampageCast >= 2 then rampageCast = 0 end--Option is set to one of the twos and we're already at 2, reset cast count
