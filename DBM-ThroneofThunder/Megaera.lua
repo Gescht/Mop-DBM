@@ -57,7 +57,8 @@ local specWarnTorrentofIceNear	= mod:NewSpecialWarningClose(139889)
 local specWarnTorrentofIce		= mod:NewSpecialWarningMove(139909)--Ice left on ground by the beam
 local specWarnNetherTear		= mod:NewSpecialWarningSwitch("ej7816", mod:IsDps())
 
-local timerRampage				= mod:NewBuffActiveTimer(21, 139458)
+local rampageDuration           = 22.3
+local timerRampage				= mod:NewBuffActiveTimer(rampageDuration, 139458)
 mod:AddBoolOption("timerBreaths", mod:IsTank() or mod:IsHealer(), "timer")--Better to have one option for breaths than 4
 local timerArcticFreezeCD		= mod:NewCDTimer(16, 139843, nil, nil, false)--We keep timers for artic and freeze for engage, since the breaths might be out of sync until after first rampage
 local timerRotArmorCD			= mod:NewCDTimer(16, 139840, nil, nil, false)--^
@@ -96,10 +97,6 @@ local activeHeadGUIDS = {}
 local iceTorrent = GetSpellInfo(139857)
 local torrentExpires = {}
 local arcaneRecent = false
-
-local lastTorrent
-local lastCinder
-local lastBreath
 
 
 local function warnTorrent(name)
@@ -187,26 +184,23 @@ local function clearHeadGUID(GUID)
 end
 
 function mod:OnCombatStart(delay)
-	lastTorrent = GetTime()
-	lastCinder = GetTime()
-	lastBreath = GetTime()
 	table.wipe(activeHeadGUIDS)
 	rampageCount = 0
 	rampageCast = 0
-		fireInFront = 0
-		venomInFront = 0
-		iceInFront = 0
-			fireBehind = 1
-			venomBehind = 0
-			iceBehind = 0
+	fireInFront = 0
+	venomInFront = 0
+	iceInFront = 0
+	fireBehind = 1
+	venomBehind = 0
+	iceBehind = 0
 	cinderIcon = 7
 	iceIcon = 6
 	table.wipe(torrentExpires)
 	if self:IsHeroic() then
-			arcaneBehind = 1
-		arcaneInFront = 0
-		arcaneRecent = false
-		timerCinderCD:Start(30.5)
+	arcaneBehind = 1
+	arcaneInFront = 0
+	arcaneRecent = false
+	timerCinderCD:Start(30.5)
 --[[		timerNetherTearCD:Start()
 	elseif self:IsDifficulty("normal10", "normal25") then
 		timerCinderCD:Start()
@@ -238,18 +232,12 @@ function mod:SPELL_CAST_SUCCESS(args)
 		specWarnNetherTear:Show()
 --		timerNetherTearCD:Start(args.sourceGUID)
 	elseif spellId == 139866 then --Torrent of Ice
-		print("SPELL_CAST_SUCCESS iceBehind ",iceBehind)
-		print("3 == iceBehind ",3 == iceBehind)
-		print("2 == iceBehind ",2 == iceBehind)
-		print("1 == iceBehind ",1 == iceBehind)
-		print("torrent ",GetTime()-lastTorrent)
-		lastTorrent = GetTime()
 		if 3 == iceBehind then
-			timerTorrentofIceCD:Start(args.sourceGUID,10)
+			timerTorrentofIceCD:Start(10)
 		elseif 2 == iceBehind then
-			timerTorrentofIceCD:Start(args.sourceGUID,20)
+			timerTorrentofIceCD:Start(20)
 		elseif 1 == iceBehind then
-			timerTorrentofIceCD:Start(args.sourceGUID,27)
+			timerTorrentofIceCD:Start(27)
 		end
 		findTorrent()
 	end
@@ -284,9 +272,6 @@ function mod:SPELL_AURA_APPLIED(args)
 			timerBreathsCD:Start()
 		end
 	elseif spellId == 139840 then --green breath
-		print("SPELL_AURA_APPLIED green breath")
-		print("lastBreath ",GetTime()-lastBreath)
-		lastBreath = GetTime()
 		local uId = DBM:GetRaidUnitId(args.destName)
 		if self:IsTanking(uId) then
 			local amount = args.amount or 1
@@ -314,15 +299,12 @@ function mod:SPELL_AURA_APPLIED(args)
 		end
 	elseif spellId == 139822 then --Cinders
 		warnCinders:Show(args.destName)
-		print("SPELL_AURA_APPLIED fireBehind ",fireBehind)
-		print("lastCinder ",GetTime()-lastCinder)
-		lastCinder = GetTime()
 		if 3 == fireBehind then
-			timerCinderCD:Start(args.sourceGUID,9)
+			timerCinderCD:Start(9)--
 		elseif 2 == fireBehind then
-			timerCinderCD:Start(args.sourceGUID,14)
+			timerCinderCD:Start(14)--
 		elseif 1 == fireBehind then
-			timerCinderCD:Start(args.sourceGUID,28)
+			timerCinderCD:Start(28)--
 		end
 		if args:IsPlayer() then
 			specWarnCinders:Show()
@@ -370,38 +352,29 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 		timerArcticFreezeCD:Cancel()
 		timerRotArmorCD:Cancel()
 
-		
-		print("rampage start set")
-		lastTorrent = GetTime()
-		lastCinder = GetTime()
-		lastBreath = GetTime()
-
 		timerBreathsCD:Cancel()
 		--breath after rampage
 		if self.Options.timerBreaths then
-			timerBreathsCD:Start(21+8.5)
+			timerBreathsCD:Start(rampageDuration+9)--31,3
 		end
 
 		timerCinderCD:Cancel()
 		--cinders of ice after rampage
-		print("CHAT_MSG_RAID_BOSS_EMOTE fireInFront ",fireInFront)
-		print("CHAT_MSG_RAID_BOSS_EMOTE fireBehind ",fireBehind)
 		if 0 ~= fireBehind then
 			if 1 == fireInFront then
-				timerCinderCD:Start(21+5.9)
+				timerCinderCD:Start(rampageDuration+5.9)--28,2
 			else
-				timerCinderCD:Start(21+3.4)
+				timerCinderCD:Start(rampageDuration+3.4)--25,7
 			end
 		end
 
 		timerTorrentofIceCD:Cancel()
 		--torrent of ice after rampage
-		print("CHAT_MSG_RAID_BOSS_EMOTE iceInFront ",iceInFront)
 		if 0 ~= iceBehind then
 			if 1 == iceInFront then
-				timerTorrentofIceCD:Start(21+12)
+				timerTorrentofIceCD:Start(rampageDuration+12)--34,5
 			else
-				timerTorrentofIceCD:Start(21+10)
+				timerTorrentofIceCD:Start(rampageDuration+10)--32,2
 			end
 		end
 --		timerNetherTearCD:Cancel()
