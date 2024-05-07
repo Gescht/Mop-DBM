@@ -98,7 +98,6 @@ local iceTorrent = GetSpellInfo(139857)
 local torrentExpires = {}
 local arcaneRecent = false
 local arcaneCount = 0
-local lastNetherTear
 
 local function warnTorrent(name)
 	if not name then return end
@@ -185,7 +184,6 @@ local function clearHeadGUID(GUID)
 end
 
 function mod:OnCombatStart(delay)
-	lastNetherTear = GetTime()
 	table.wipe(activeHeadGUIDS)
 	rampageCount = 0
 	rampageCast = 0
@@ -231,8 +229,6 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
 	if spellId == 140138 then--nether tear
-		print("SPELL_CAST_SUCCESS lastNetherTear ",GetTime()-lastNetherTear)
-		lastNetherTear = GetTime()
 		arcaneCount = arcaneCount + 1
 		warnNetherTear:Show()
 		specWarnNetherTear:Show()
@@ -240,10 +236,14 @@ function mod:SPELL_CAST_SUCCESS(args)
 			if 1 == arcaneCount then
 				timerNetherTearCD:Start(12)
 			elseif 2 == arcaneCount then
-				timerNetherTearCD:Start(8)
+				timerNetherTearCD:Start(13)
 			elseif 3 == arcaneCount then
+				timerNetherTearCD:Start(12)
+			elseif 4 == arcaneCount then
+				timerNetherTearCD:Start(8)
+			elseif 5 == arcaneCount then
 				timerNetherTearCD:Start(5)
-				arcaneCount = 0
+				arcaneCount = 2
 			end
 		elseif 2 == arcaneBehind then--2 arcane heads behind
 			if 1 == arcaneCount then
