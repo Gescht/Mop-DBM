@@ -236,7 +236,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		arcaneCount = arcaneCount + 1
 		warnNetherTear:Show()
 		specWarnNetherTear:Show()
-		if 3 == arcaneBehind then
+		if 3 == arcaneBehind then--3 arcane heads behind
 			if 1 == arcaneCount then
 				timerNetherTearCD:Start(12)
 			elseif 2 == arcaneCount then
@@ -245,14 +245,14 @@ function mod:SPELL_CAST_SUCCESS(args)
 				timerNetherTearCD:Start(5)
 				arcaneCount = 0
 			end
-		elseif 2 == arcaneBehind then
+		elseif 2 == arcaneBehind then--2 arcane heads behind
 			if 1 == arcaneCount then
 				timerNetherTearCD:Start(12)
 			elseif 2 == arcaneCount then
 				timerNetherTearCD:Start(13)
 				arcaneCount = 0
 			end
-		elseif 1 == arcaneBehind then
+		elseif 1 == arcaneBehind then--1 arcane heads behind
 			timerNetherTearCD:Start()
 		end
 	elseif spellId == 139866 then --Torrent of Ice
@@ -370,6 +370,7 @@ mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 	if msg:find("spell:139458") then --Rampage start
+		arcaneCount = 0
 		rampageCount = rampageCount + 1
 		warnRampage:Show(rampageCount)
 		specWarnRampage:Show(rampageCount)
