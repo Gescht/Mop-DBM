@@ -97,7 +97,7 @@ local activeHeadGUIDS = {}
 local iceTorrent = GetSpellInfo(139857)
 local torrentExpires = {}
 local arcaneRecent = false
-
+local arcaneCount = 0
 local lastNetherTear
 
 local function warnTorrent(name)
@@ -197,12 +197,13 @@ function mod:OnCombatStart(delay)
 	iceBehind = 0
 	cinderIcon = 7
 	iceIcon = 6
+	arcaneCount = 0
 	table.wipe(torrentExpires)
 	if self:IsHeroic() then
-	arcaneBehind = 1
-	arcaneInFront = 0
-	arcaneRecent = false
-	timerCinderCD:Start(30.5)
+		arcaneBehind = 1
+		arcaneInFront = 0
+		arcaneRecent = false
+		timerCinderCD:Start()
 --[[		timerNetherTearCD:Start()
 	elseif self:IsDifficulty("normal10", "normal25") then
 		timerCinderCD:Start()
@@ -229,12 +230,31 @@ end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
-	if spellId == 140138 then
+	if spellId == 140138 then--nether tear
 		print("SPELL_CAST_SUCCESS lastNetherTear ",GetTime()-lastNetherTear)
 		lastNetherTear = GetTime()
+		arcaneCount = arcaneCount + 1
 		warnNetherTear:Show()
 		specWarnNetherTear:Show()
-		timerNetherTearCD:Start()
+		if 3 == arcaneBehind then
+			if 1 == arcaneCount then
+				timerNetherTearCD:Start(12)
+			elseif 2 == arcaneCount then
+				timerNetherTearCD:Start(8)
+			elseif 3 == arcaneCount then
+				timerNetherTearCD:Start(5)
+				arcaneCount = 0
+			end
+		elseif 2 == arcaneBehind then
+			if 1 == arcaneCount then
+				timerNetherTearCD:Start(12)
+			elseif 2 == arcaneCount then
+				timerNetherTearCD:Start(13)
+				arcaneCount = 0
+			end
+		elseif 1 == arcaneBehind then
+			timerNetherTearCD:Start()
+		end
 	elseif spellId == 139866 then --Torrent of Ice
 		if 3 == iceBehind then
 			timerTorrentofIceCD:Start(10)
@@ -383,8 +403,10 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 		end
 
 		timerNetherTearCD:Cancel()
-		print("SPELL_CAST_SUCCESS lastNetherTear ",GetTime()-lastNetherTear)
-		lastNetherTear = GetTime()
+		--nether tear after rampage
+		if 0 ~= arcaneBehind then
+			timerNetherTearCD:Start(rampageDuration+15)--37.5
+		end
 
 		timerRampage:Start()
 		if not (self.Options.AnnounceCooldowns == "Every") then
