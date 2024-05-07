@@ -208,6 +208,7 @@ function mod:OnCombatStart(delay)
 	else
 		arcaneBehind = 0
 		arcaneInFront = 0
+		timerCinderCD:Start(30)
 		--timerCinderCD:Start(58)
 	end
 	self:RegisterShortTermEvents(
