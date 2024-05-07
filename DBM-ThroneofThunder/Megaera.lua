@@ -402,11 +402,13 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 				timerTorrentofIceCD:Start(rampageDuration+9)--32,2
 			end
 		end
-
-		timerNetherTearCD:Cancel()
-		--nether tear after rampage
-		if 0 ~= arcaneBehind then
-			timerNetherTearCD:Start(rampageDuration+15)--37.5
+		
+		if self:IsHeroic() then
+			timerNetherTearCD:Cancel()
+			--nether tear after rampage
+			if 0 ~= arcaneBehind then
+				timerNetherTearCD:Start(rampageDuration+15)--37.5
+			end
 		end
 
 		timerRampage:Start()
