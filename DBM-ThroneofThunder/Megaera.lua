@@ -202,8 +202,8 @@ function mod:OnCombatStart(delay)
 		arcaneInFront = 0
 		arcaneRecent = false
 		timerCinderCD:Start(30)
---[[		timerNetherTearCD:Start()
-	elseif self:IsDifficulty("normal10", "normal25") then
+		timerNetherTearCD:Start()--25
+--[[	elseif self:IsDifficulty("normal10", "normal25") then
 		timerCinderCD:Start()
 	else
 		timerCinderCD:Start(58)--]]
