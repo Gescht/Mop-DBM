@@ -203,10 +203,12 @@ function mod:OnCombatStart(delay)
 		arcaneRecent = false
 		timerCinderCD:Start(30)
 		timerNetherTearCD:Start()--25
---[[	elseif self:IsDifficulty("normal10", "normal25") then
-		timerCinderCD:Start()
+--	elseif self:IsDifficulty("normal10", "normal25") then
+--		timerCinderCD:Start()
 	else
-		timerCinderCD:Start(58)--]]
+		arcaneBehind = 0
+		arcaneInFront = 0
+		--timerCinderCD:Start(58)
 	end
 	self:RegisterShortTermEvents(
 		"INSTANCE_ENCOUNTER_ENGAGE_UNIT"--We register here to prevent detecting first heads on pull before variables reset from first engage fire. We'll catch them on delayed engages fired couple seconds later
