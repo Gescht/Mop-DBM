@@ -68,7 +68,7 @@ local timerBreathsCD			= mod:NewTimer(16, "timerBreathsCD", 137731, nil, false)-
 --TODO, Verify timers on normal. WoL bugs out and combines GUIDs making it hard to determine actual CDs in my logs.
 local timerCinderCD				= mod:NewCDTimer(14, 139822, nil, not mod:IsTank())--The cd is either 25 or 28 (either or apparently, no in between). it can even swap between the two in SAME pull
 local timerTorrentofIce			= mod:NewBuffFadesTimer(11, 139866)
-local timerTorrentofIceCD		= mod:NewCDTimer(20, 139866, nil, not mod:IsTank())--Same as bove, either 25 or 28
+local timerTorrentofIceCD		= mod:NewCDTimer(26, 139866, nil, not mod:IsTank())--Same as bove, either 25 or 28
 local timerNetherTearCD			= mod:NewCDTimer(25, 140138)--Heroic. Also either 25 or 28. On by default since these require more pre planning than fire and ice.
 
 local soundCinders				= mod:NewSound(139822)
@@ -257,11 +257,11 @@ function mod:SPELL_CAST_SUCCESS(args)
 		end
 	elseif spellId == 139866 then --Torrent of Ice
 		if 3 == iceBehind then
-			timerTorrentofIceCD:Start(10)
+			timerTorrentofIceCD:Start(9)
 		elseif 2 == iceBehind then
-			timerTorrentofIceCD:Start(20)
+			timerTorrentofIceCD:Start(19)
 		elseif 1 == iceBehind then
-			timerTorrentofIceCD:Start(27)
+			timerTorrentofIceCD:Start(26)
 		end
 		findTorrent()
 	end
@@ -397,9 +397,9 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 		--torrent of ice after rampage
 		if 0 ~= iceBehind then
 			if 1 == iceInFront then
-				timerTorrentofIceCD:Start(rampageDuration+12)--34,5
+				timerTorrentofIceCD:Start(rampageDuration+11)--34,5
 			else
-				timerTorrentofIceCD:Start(rampageDuration+10)--32,2
+				timerTorrentofIceCD:Start(rampageDuration+9)--32,2
 			end
 		end
 
