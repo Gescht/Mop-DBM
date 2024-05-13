@@ -89,7 +89,11 @@ local timerTidalForceCD					= mod:NewCDTimer(71, 137531)
 
 local berserkTimer						= mod:NewBerserkTimer(600)
 
-mod:AddBoolOption("RangeFrame")--For various abilities that target even melee. UPDATE, cosmic barrage (worst of the 3 abilities) no longer target melee. However, light of day and tears of teh sun still do. melee want to split into 2-3 groups (depending on how many) but no longer have to stupidly spread about all crazy and out of range of boss during cosmic barrage to avoid dying. On that note, MAYBE change this to ranged default instead of all.
+mod:AddBoolOption("RangeFrame")
+--For various abilities that target even melee. UPDATE, cosmic barrage (worst of the 3 abilities) no longer target melee. However,
+--light of day and tears of teh sun still do. melee want to split into 2-3 groups (depending on how many)
+--but no longer have to stupidly spread about all crazy and out of range of boss during cosmic barrage to avoid dying. 
+--On that note, MAYBE change this to ranged default instead of all.
 
 local phase3Started = false
 local invokeTiger = GetSpellInfo(138264)
