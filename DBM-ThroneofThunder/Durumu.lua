@@ -60,7 +60,7 @@ local timerForceOfWillCD			= mod:NewCDTimer(20, 136413)--Actually has a 20 secon
 local timerLightSpectrumCD			= mod:NewNextTimer(60, "ej6891")
 local timerDisintegrationBeam		= mod:NewBuffActiveTimer(55, "ej6882")
 local timerDisintegrationBeamCD		= mod:NewNextTimer(136, "ej6882")
-local timerLifeDrainCD				= mod:NewCDTimer(40, 133795)
+local timerLifeDrainCD				= mod:NewCDTimer(44, 133795)
 local timerLifeDrain				= mod:NewBuffActiveTimer(18, 133795)
 local timerIceWallCD				= mod:NewNextTimer(120, 134587, nil, nil, nil, 111231)
 local timerDarkParasiteCD			= mod:NewCDTimer(60.5, 133597, nil, mod:IsHealer())--Heroic 60-62. (the timer is tricky and looks far more variable but it really isn't, it just doesn't get to utilize it's true cd timer more than twice per fight)
@@ -87,6 +87,7 @@ local lastBlue = nil
 local lastYellow = nil
 local spectrumStarted = false
 local lifeDrained = false
+local lifeDrainBool = false
 local lfrCrimsonFogRevealed = false
 local lfrAmberFogRevealed = false
 local lfrAzureFogRevealed = false
@@ -121,6 +122,8 @@ local function BeamEnded()
 		timerDarkParasiteCD:Start(10)
 		timerIceWallCD:Start(32)
 		firstIcewall = true
+		timerLifeDrainCD:Start(28)
+		lifeDrainBool = false
 	end
 	if mod:IsDifficulty("lfr25") then
 		timerLightSpectrumCD:Start(66)
@@ -173,6 +176,7 @@ function mod:OnCombatStart(delay)
 	lastYellow = nil
 	spectrumStarted = false
 	lifeDrained = false
+	lifeDrainBool = false
 	lfrCrimsonFogRevealed = false
 	lfrAmberFogRevealed = false
 	lfrAzureFogRevealed = false
@@ -422,7 +426,8 @@ function mod:CHAT_MSG_MONSTER_EMOTE(msg, npc, _, _, target)
 		warnLifeDrain:Show(target)
 		specWarnLifeDrain:Show(target)
 		timerLifeDrain:Start()
-		timerLifeDrainCD:Start(not lifeDrained and 50 or nil)--first is 50, 2nd and later is 40 
+		timerLifeDrainCD:Start(not lifeDrainBool and 41 or nil)--first is 41, 2nd and later is 40 
+		lifeDrainBool = true
 		lifeDrained = true
 		if self.Options.SetIconLifeDrain then
 			self:SetIcon(target, 8)--Skull
